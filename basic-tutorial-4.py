@@ -36,6 +36,14 @@ def poll_position():
 GLib.timeout_add(100, poll_position)
 
 
+def format_time(time: int):
+    seconds = time / Gst.SECOND
+    hours = int(seconds // 3600)
+    minutes = int(seconds % 3600 // 60)
+    secs = int(seconds % 60)
+    return f"{hours:02d}:{minutes:02d}:{secs:02d}"
+
+
 def bus_call(bus: Gst.Bus, msg: Gst.Message):
     match msg.type:
         case Gst.MessageType.ERROR:
@@ -60,7 +68,11 @@ def bus_call(bus: Gst.Bus, msg: Gst.Message):
                     if success:
                         _, seek_enabled, start, end = query.parse_seeking()
                         if seek_enabled:
-                            print(f"Seeking is ENABLED from {start} to {end}")
+                            print(
+                                "Seeking is ENABLED "
+                                f"from {format_time(start)} "
+                                f"to {format_time(end)}"
+                            )
                         else:
                             print("Seeking is DISABLED for this stream.")
 
